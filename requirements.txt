@@ -8,10 +8,16 @@ absl-py==1.0.0
     # via mediapipe
 attrs==21.4.0
     # via mediapipe
+certifi==2021.10.8
+    # via requests
+charset-normalizer==2.0.12
+    # via requests
 cycler==0.11.0
     # via matplotlib
 fonttools==4.33.3
     # via matplotlib
+idna==3.3
+    # via requests
 kiwisolver==1.4.2
     # via matplotlib
 matplotlib==3.5.2
@@ -26,6 +32,7 @@ numpy==1.22.3
     #   opencv-contrib-python
     #   opencv-python
     #   pandas
+    #   torchvision
 opencv-contrib-python==4.5.5.64
     # via mediapipe
 opencv-python==4.5.5.64
@@ -35,7 +42,9 @@ packaging==21.3
 pandas==1.4.2
     # via -r requirements.in
 pillow==9.1.0
-    # via matplotlib
+    # via
+    #   matplotlib
+    #   torchvision
 protobuf==3.20.1
     # via mediapipe
 pyparsing==3.0.8
@@ -48,7 +57,21 @@ python-dateutil==2.8.2
     #   pandas
 pytz==2022.1
     # via pandas
+requests==2.27.1
+    # via torchvision
 six==1.16.0
     # via
     #   absl-py
     #   python-dateutil
+torch==1.11.0
+    # via
+    #   -r requirements.in
+    #   torchvision
+torchvision==0.12.0
+    # via -r requirements.in
+typing-extensions==4.2.0
+    # via
+    #   torch
+    #   torchvision
+urllib3==1.26.9
+    # via requests
