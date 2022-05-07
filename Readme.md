@@ -1,7 +1,6 @@
 # PythonProject
 
-# Setup for developement:
-
+# Environment setup for project:
 - Setup a python 3.x venv (usually in `.venv`)
   - You can run `./scripts/create-venv.sh` to generate one
   - Might require chmod +x to get permission
@@ -12,3 +11,7 @@
 
 ## Update versions
 `pip-compile --output-file=requirements.txt requirements.in --upgrade`
+
+# Project structure:
+- Create an output folder and dataset folder
+- Store video files in datasetfolder
