@@ -9,6 +9,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import os
+import pandas as pd
 from torch.autograd import Variable
 
 import FacialExpressionRecognition.transforms as transforms
@@ -26,6 +27,7 @@ transform_test = transforms.Compose([
     transforms.Lambda(lambda crops: torch.stack([transforms.ToTensor()(crop) for crop in crops])),
 ])
 
+
 def rgb2gray(rgb):
     return np.dot(rgb[...,:3], [0.299, 0.587, 0.114])
 
@@ -35,47 +37,71 @@ def rgb2gray(rgb):
 
 # raw_img = io.imread('FacialExpressionRecognition/images/1.jpg')
 
-######### Using the function to get the faces - Shad ###############
+""" Using the function to get the faces - Shad """
 vid_file_path = './dataset/00001.mp4'
 face_list = get_face_image_list(vid_file_path)
-
-# get first sec and first face in list
-raw_img = face_list[0][0]
 
 # uncomment to show image
 # cv2.imshow('image window', raw_img)
 # cv2.waitKey(0)
 # cv2.destroyAllWindows()
 
-gray = rgb2gray(raw_img)
-gray = resize(gray, (48,48), mode='symmetric').astype(np.uint8)
-
-img = gray[:, :, np.newaxis]
-
-img = np.concatenate((img, img, img), axis=2)
-img = Image.fromarray(img)
-inputs = transform_test(img)
-
 class_names = ['Angry', 'Disgust', 'Fear', 'Happy', 'Sad', 'Surprise', 'Neutral']
 
 net = VGG('VGG19')
-checkpoint = torch.load(os.path.join('expressionmodels', 'PrivateTest_model.t7'), map_location=torch.device('cpu'))
+checkpoint = torch.load(os.path.join('expressionmodels', 'PrivateTest_model.t7'))
 net.load_state_dict(checkpoint['net'])
-# net.cuda()
+net.cuda()
 net.eval()
 
-ncrops, c, h, w = np.shape(inputs)
+emotion_list = []
+for list_second in face_list:
+    emotion = [0] * 7
+    for raw_img in list_second:
+        gray = rgb2gray(raw_img)
+        gray = resize(gray, (48,48), mode='symmetric').astype(np.uint8)
 
-inputs = inputs.view(-1, c, h, w)
-# inputs = inputs.cuda()
-inputs = Variable(inputs, volatile=True)
-outputs = net(inputs)
+        img = gray[:, :, np.newaxis]
 
-outputs_avg = outputs.view(ncrops, -1).mean(0)  # avg over crops
+        img = np.concatenate((img, img, img), axis=2)
+        img = Image.fromarray(img)
+        inputs = transform_test(img)
 
-score = F.softmax(outputs_avg, dim=0)
-_, predicted = torch.max(outputs_avg.data, 0)
+        ncrops, c, h, w = np.shape(inputs)
 
+        inputs = inputs.view(-1, c, h, w)
+        inputs = inputs.cuda()
+        inputs = Variable(inputs, volatile=True)
+        outputs = net(inputs)
+
+        outputs_avg = outputs.view(ncrops, -1).mean(0)  # avg over crops
+
+        score = F.softmax(outputs_avg, dim=0)
+        _, predicted = torch.max(outputs_avg.data, 0)
+
+        emojis = str(class_names[int(predicted.cpu().numpy())])
+        # print("The Expression is %s" % str(class_names[int(predicted.cpu().numpy())]))
+        if emojis == "Angry":
+            emotion[0] += 1
+        elif emojis == "Disgust":
+            emotion[1] += 1
+        elif emojis == "Fear":
+            emotion[2] += 1
+        elif emojis == "Happy":
+            emotion[3] += 1
+        elif emojis == "Neutral":
+            emotion[4] += 1
+        elif emojis == "Sad":
+            emotion[5] += 1
+        elif emojis == "Surprise":
+            emotion[6] += 1
+    emotion_list.append(emotion)
+
+# convert to df
+df = pd.DataFrame(data=emotion_list,columns=['Angry', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Surprise'])
+df.to_csv('./output/frame_info.csv') # save df as csv
+
+"""
 plt.rcParams['figure.figsize'] = (13.5,5.5)
 axes=plt.subplot(1, 3, 1)
 plt.imshow(raw_img)
@@ -110,7 +136,7 @@ plt.tight_layout()
 #plt.show()
 plt.savefig(os.path.join('output/l.png'))
 plt.close()
+"""
 
-print("The Expression is %s" %str(class_names[int(predicted.cpu().numpy())]))
 
 
