@@ -15,6 +15,7 @@ def get_vid_attributes(vid_cap):
 
     return width, height, length
 
+
 def get_face_image_list(video_file_path, detect_param=0.1):
 
     vid_cap = cv2.VideoCapture(video_file_path)
@@ -46,18 +47,15 @@ def get_face_image_list(video_file_path, detect_param=0.1):
             # Convert the BGR image to RGB and process it with MediaPipe Face Detection.
             results = face_detection.process(cv2.cvtColor(sample_frame, cv2.COLOR_BGR2RGB))  # replace with frame
 
-            # get detections for frame and export face
-            for j,detection in enumerate(results.detections):
-                x = int(detection.location_data.relative_bounding_box.xmin * width) # get x coordinate
-                y = int(detection.location_data.relative_bounding_box.ymin * height) # get y coordinate
-                x_width = int(detection.location_data.relative_bounding_box.width * width) # get width
-                y_height = int(detection.location_data.relative_bounding_box.height * height) # get height
-                cropped_img = sample_frame[y:y+y_height,x:x+x_width].copy() # crop image
-                face_list.append(cropped_img)
-
-        if i == 2: # place holder for testing
-            break
-
-        faces_persecond_list.append(face_list)
+            if results.detections is not None:
+                for detection in results.detections:
+                    x = int(detection.location_data.relative_bounding_box.xmin * width) # get x coordinate
+                    y = int(detection.location_data.relative_bounding_box.ymin * height) # get y coordinate
+                    x_width = int(detection.location_data.relative_bounding_box.width * width) # get width
+                    y_height = int(detection.location_data.relative_bounding_box.height * height) # get height
+                    cropped_img = sample_frame[y:y+y_height,x:x+x_width].copy() # crop image
+                    face_list.append(cropped_img)
+                faces_persecond_list.append(face_list)
+            print(i)
 
     return faces_persecond_list

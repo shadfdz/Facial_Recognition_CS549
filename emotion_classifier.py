@@ -59,7 +59,10 @@ for list_second in face_list:
     emotion = [0] * 7
     for raw_img in list_second:
         gray = rgb2gray(raw_img)
-        gray = resize(gray, (48,48), mode='symmetric').astype(np.uint8)
+        try:
+            gray = resize(gray, (48,48), mode='symmetric').astype(np.uint8)
+        except ValueError:
+            continue
 
         img = gray[:, :, np.newaxis]
 
@@ -71,8 +74,9 @@ for list_second in face_list:
 
         inputs = inputs.view(-1, c, h, w)
         inputs = inputs.cuda()
-        inputs = Variable(inputs, volatile=True)
-        outputs = net(inputs)
+        # inputs = Variable(inputs, volatile=True)
+        with torch.no_grad():
+            outputs = net(inputs)
 
         outputs_avg = outputs.view(ncrops, -1).mean(0)  # avg over crops
 
