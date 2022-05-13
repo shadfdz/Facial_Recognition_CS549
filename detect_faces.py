@@ -16,7 +16,7 @@ def get_vid_attributes(vid_cap):
     return width, height, length
 
 
-def get_face_image_list(video_file_path, detect_param=0.1):
+def get_face_image_list(video_file_path, detect_param=0.5):
 
     vid_cap = cv2.VideoCapture(video_file_path)
     if (vid_cap.isOpened() == False):
@@ -56,6 +56,5 @@ def get_face_image_list(video_file_path, detect_param=0.1):
                     cropped_img = sample_frame[y:y+y_height,x:x+x_width].copy() # crop image
                     face_list.append(cropped_img)
                 faces_persecond_list.append(face_list)
-            print(i)
 
     return faces_persecond_list

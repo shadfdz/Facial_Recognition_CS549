@@ -38,7 +38,7 @@ def rgb2gray(rgb):
 # raw_img = io.imread('FacialExpressionRecognition/images/1.jpg')
 
 """ Using the function to get the faces - Shad """
-vid_file_path = './dataset/00001.mp4'
+vid_file_path = './dataset/00014.mp4'
 face_list = get_face_image_list(vid_file_path)
 
 # uncomment to show image
@@ -50,6 +50,7 @@ class_names = ['Angry', 'Disgust', 'Fear', 'Happy', 'Sad', 'Surprise', 'Neutral'
 
 net = VGG('VGG19')
 checkpoint = torch.load(os.path.join('expressionmodels', 'PrivateTest_model.t7'))
+print(checkpoint.keys())
 net.load_state_dict(checkpoint['net'])
 net.cuda()
 net.eval()
@@ -103,44 +104,8 @@ for list_second in face_list:
 
 # convert to df
 df = pd.DataFrame(data=emotion_list,columns=['Angry', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Surprise'])
-df.to_csv('./output/frame_info.csv') # save df as csv
+df.to_csv('./output/vgg19_frame_info14.csv') # save df as csv
 
-"""
-plt.rcParams['figure.figsize'] = (13.5,5.5)
-axes=plt.subplot(1, 3, 1)
-plt.imshow(raw_img)
-plt.xlabel('Input Image', fontsize=16)
-axes.set_xticks([])
-axes.set_yticks([])
-plt.tight_layout()
-
-
-plt.subplots_adjust(left=0.05, bottom=0.2, right=0.95, top=0.9, hspace=0.02, wspace=0.3)
-
-plt.subplot(1, 3, 2)
-ind = 0.1+0.6*np.arange(len(class_names))    # the x locations for the groups
-width = 0.4       # the width of the bars: can also be len(x) sequence
-color_list = ['red','orangered','darkorange','limegreen','darkgreen','royalblue','navy']
-for i in range(len(class_names)):
-    plt.bar(ind[i], score.data.cpu().numpy()[i], width, color=color_list[i])
-plt.title("Classification results ",fontsize=20)
-plt.xlabel(" Expression Category ",fontsize=16)
-plt.ylabel(" Classification Score ",fontsize=16)
-plt.xticks(ind, class_names, rotation=45, fontsize=14)
-
-axes=plt.subplot(1, 3, 3)
-emojis_img = io.imread('FacialExpressionRecognition/images/emojis/%s.png' % str(class_names[int(predicted.cpu().numpy())]))
-plt.imshow(emojis_img)
-plt.xlabel('Emoji Expression', fontsize=16)
-axes.set_xticks([])
-axes.set_yticks([])
-plt.tight_layout()
-# show emojis
-
-#plt.show()
-plt.savefig(os.path.join('output/l.png'))
-plt.close()
-"""
 
 
 
