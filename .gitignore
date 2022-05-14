@@ -2,3 +2,5 @@
 /dataset/
 .DS_Store
 /expressionmodels/PrivateTest_model.t7
+/expressionmodels/resnet18_pt_mcn.pth
+/expressionmodels/vgg11_pt_mcn.pth

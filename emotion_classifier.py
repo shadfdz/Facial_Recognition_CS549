@@ -38,7 +38,7 @@ def rgb2gray(rgb):
 # raw_img = io.imread('FacialExpressionRecognition/images/1.jpg')
 
 """ Using the function to get the faces - Shad """
-vid_file_path = './dataset/00014.mp4'
+vid_file_path = './dataset/00002.mp4'
 face_list = get_face_image_list(vid_file_path)
 
 # uncomment to show image
@@ -48,10 +48,15 @@ face_list = get_face_image_list(vid_file_path)
 
 class_names = ['Angry', 'Disgust', 'Fear', 'Happy', 'Sad', 'Surprise', 'Neutral']
 
-net = VGG('VGG19')
-checkpoint = torch.load(os.path.join('expressionmodels', 'PrivateTest_model.t7'))
-print(checkpoint.keys())
-net.load_state_dict(checkpoint['net'])
+net = ResNet18()
+# net = VGG('VGG11')
+'''vgg19 model'''
+# net = VGG('VGG19')
+checkpoint = torch.load(os.path.join('expressionmodels', 'resnet18_pt_mcn.pth'))
+# checkpoint = torch.load(os.path.join('expressionmodels', 'vgg11_pt_mcn.pth'))
+# checkpoint = torch.load(os.path.join('expressionmodels', 'PrivateTest_model.t7'))
+net.load_state_dict(checkpoint, strict=False)
+# net.load_state_dict(checkpoint['net'])
 net.cuda()
 net.eval()
 
@@ -77,7 +82,8 @@ for list_second in face_list:
         inputs = inputs.cuda()
         # inputs = Variable(inputs, volatile=True)
         with torch.no_grad():
-            outputs = net(inputs)
+            inputs = Variable(inputs)
+        outputs = net(inputs)
 
         outputs_avg = outputs.view(ncrops, -1).mean(0)  # avg over crops
 
@@ -104,7 +110,7 @@ for list_second in face_list:
 
 # convert to df
 df = pd.DataFrame(data=emotion_list,columns=['Angry', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Surprise'])
-df.to_csv('./output/vgg19_frame_info14.csv') # save df as csv
+df.to_csv('./output/resnet_frame_info2.csv') # save df as csv
 
 
 
