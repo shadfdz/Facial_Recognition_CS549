@@ -5,3 +5,5 @@ mediapipe
 torch
 torchvision
 scikit-image
+seaborn
+matplotlib
