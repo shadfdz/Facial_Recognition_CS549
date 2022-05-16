@@ -1,4 +1,5 @@
 # PythonProject
+[Github](https://github.com/shadfdz/Facial_Recognition_CS549.git)
 
 # Environment setup for project (use pip 22.0.4):
 - Setup a python 3.x venv (usually in `.venv`)
