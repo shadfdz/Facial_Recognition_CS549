@@ -15,3 +15,7 @@
 # Project structure:
 - Create an output folder and dataset folder
 - Store video files in datasetfolder
+
+# Project Workflow
+- run python3 emotion_classifier.py to detect faces and classify the emotion
+- run pyhotn3 emotion_analysis.py to output analysis plots
